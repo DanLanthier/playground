@@ -82,9 +82,106 @@
         max-height: 140px;
       }
     }
+    .nav-container {
+      position: relative;
+    }
+    .hamburger {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      background: none;
+      border: none;
+      font-size: 2.2rem;
+      color: #005ac2;
+      cursor: pointer;
+      z-index: 1101;
+      padding: 0 8px;
+      transition: color 0.15s;
+    }
+    .hamburger:focus {
+      outline: 2px solid #b4d6fa;
+    }
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -260px;
+      width: 240px;
+      height: 100vh;
+      background: #fff;
+      box-shadow: 2px 0 16px rgba(50,50,93,0.10);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 0 0 0;
+      z-index: 1200;
+      transition: left 0.22s cubic-bezier(.4,0,.2,1);
+    }
+    .side-menu.open {
+      left: 0;
+    }
+    .side-menu a {
+      color: #005ac2;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 16px 32px;
+      border-radius: 0 20px 20px 0;
+      transition: background 0.13s, color 0.13s;
+    }
+    .side-menu a:hover {
+      background: #f0f7ff;
+      color: #003366;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #b4b4b4;
+      align-self: flex-end;
+      margin: 0 16px 16px 0;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .close-btn:hover {
+      color: #005ac2;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.18);
+      z-index: 1199;
+    }
+    .overlay.open {
+      display: block;
+    }
+    @media (max-width: 600px) {
+      .side-menu {
+        width: 80vw;
+        min-width: 160px;
+        max-width: 320px;
+      }
+      .hamburger {
+        top: 16px;
+        left: 12px;
+        font-size: 2rem;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="nav-container">
+    <button class="hamburger" id="menuBtn" aria-label="Open navigation menu">&#9776;</button>
+    <nav class="side-menu" id="sideMenu">
+      <button class="close-btn" id="closeMenu" aria-label="Close navigation menu">&times;</button>
+      <a href="index.html">Home</a>
+      <a href="umg.html">UMG</a>
+      <a href="bombas.html">Bombas</a>
+      <a href="untuckit.html">UNTUCKit</a>
+      <a href="ag1.html">AG1</a>
+      <a href="scjohnson.html">SC Johnson</a>
+    </nav>
+    <div class="overlay" id="overlay"></div>
+  </div>
   <div class="header">UMG</div>
   <div class="tiles">
     <a class="tile" href="https://docs.google.com/spreadsheets/d/1uYZKS7mFGi2SrJCDoaTPzMGIvHErxRf8TNXJdQ7gK7I/edit#gid=0" target="_blank" rel="noopener noreferrer">Ticket Tracking</a>
@@ -94,5 +191,23 @@
     <a class="tile" href="https://banff.lightning.force.com/lightning/r/Account/0018V00002a7WpRQAU/view" target="_blank" rel="noopener noreferrer">Salesforce</a>
     <a class="tile" href="https://notebooklm.google.com/notebook/c69f4d60-5410-4f91-b7ea-fd468c9e67fc" target="_blank" rel="noopener noreferrer">NotebookLM</a>
   </div>
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    const closeMenu = document.getElementById('closeMenu');
+    const overlay = document.getElementById('overlay');
+    menuBtn.onclick = function() {
+      sideMenu.classList.add('open');
+      overlay.classList.add('open');
+    };
+    closeMenu.onclick = function() {
+      sideMenu.classList.remove('open');
+      overlay.classList.remove('open');
+    };
+    overlay.onclick = function() {
+      sideMenu.classList.remove('open');
+      overlay.classList.remove('open');
+    };
+  </script>
 </body>
 </html> 
