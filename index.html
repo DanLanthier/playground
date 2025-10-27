@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UMG Work Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
     body {
       background: #f6f6f7;
@@ -58,6 +59,88 @@
       color: #003366;
       border-color: #b4d6fa;
     }
+    
+    /* Password Gate Styles */
+    .password-gate {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(246, 246, 247, 0.98);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .password-gate.hidden {
+      display: none;
+    }
+    .password-box {
+      background: white;
+      padding: 48px 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(50, 50, 93, 0.15);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    .password-box h2 {
+      color: #005ac2;
+      margin-bottom: 12px;
+      font-size: 1.8rem;
+    }
+    .password-box p {
+      color: #6b7280;
+      margin-bottom: 32px;
+      font-size: 0.95rem;
+    }
+    .password-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #dfe3e8;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    .password-input:focus {
+      outline: none;
+      border-color: #005ac2;
+    }
+    .password-submit {
+      width: 100%;
+      padding: 14px 18px;
+      background: #005ac2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .password-submit:hover {
+      background: #004a9c;
+    }
+    .error-message {
+      color: #dc2626;
+      font-size: 0.9rem;
+      margin-top: 12px;
+      display: none;
+    }
+    .error-message.show {
+      display: block;
+    }
+    .content {
+      display: none;
+    }
+    .content.unlocked {
+      display: block;
+    }
+    
     @media (max-width: 900px) {
       .tiles {
         gap: 24px;
@@ -81,17 +164,82 @@
         height: 60vw;
         max-height: 140px;
       }
+      .password-box {
+        padding: 36px 28px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="header">Ol' Schmeckles<br><span style="font-size:1.5rem;font-weight:500;">TAM Work Tracking</span></div>
-  <div class="tiles">
-    <a class="tile" href="umg.html">UMG</a>
-    <a class="tile" href="bombas.html">Bombas</a>
-    <a class="tile" href="untuckit.html">UNTUCKit</a>
-    <a class="tile" href="ag1.html">AG1</a>
-    <a class="tile" href="scjohnson.html">SC Johnson</a>
+  <!-- Password Gate -->
+  <div class="password-gate" id="passwordGate">
+    <div class="password-box">
+      <h2>🔒 Protected Access</h2>
+      <p>Please enter the password to continue</p>
+      <input type="password" class="password-input" id="passwordInput" placeholder="Enter password" autocomplete="off">
+      <button class="password-submit" id="unlockBtn">Unlock</button>
+      <div class="error-message" id="errorMessage">Incorrect password. Please try again.</div>
+    </div>
   </div>
+
+  <!-- Main Content (Hidden until unlocked) -->
+  <div class="content" id="mainContent">
+    <div class="header">Ol' Schmeckles<br><span style="font-size:1.5rem;font-weight:500;">TAM Work Tracking</span></div>
+    <div class="tiles">
+      <a class="tile" href="umg.html">UMG</a>
+      <a class="tile" href="bombas.html">Bombas</a>
+      <a class="tile" href="untuckit.html">UNTUCKit</a>
+      <a class="tile" href="ag1.html">AG1</a>
+      <a class="tile" href="scjohnson.html">SC Johnson</a>
+    </div>
+  </div>
+
+  <script>
+    // Password protection system
+    const passwordInput = document.getElementById('passwordInput');
+    const unlockBtn = document.getElementById('unlockBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const passwordGate = document.getElementById('passwordGate');
+    const mainContent = document.getElementById('mainContent');
+    
+    // Hash the correct password (you can change this)
+    const correctPasswordHash = 'your-password-hash-here'; // Will be replaced with actual hash
+    
+    function checkPassword() {
+      const enteredPassword = passwordInput.value;
+      
+      // Password check
+      if (enteredPassword === 'MyTeam2025!Secure') {
+        // Store in sessionStorage so user doesn't have to re-enter on same tab
+        sessionStorage.setItem('authenticated', 'true');
+        sessionStorage.setItem('masterKey', enteredPassword);
+        
+        // Unlock content
+        passwordGate.classList.add('hidden');
+        mainContent.classList.add('unlocked');
+        errorMessage.classList.remove('show');
+      } else {
+        errorMessage.classList.add('show');
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }
+    
+    // Check if already authenticated in this session
+    if (sessionStorage.getItem('authenticated') === 'true') {
+      passwordGate.classList.add('hidden');
+      mainContent.classList.add('unlocked');
+    }
+    
+    unlockBtn.addEventListener('click', checkPassword);
+    passwordInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+    
+    // Focus on password input when page loads
+    passwordInput.focus();
+  </script>
 </body>
-</html> 
+</html>

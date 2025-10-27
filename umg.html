@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>UMG Links</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <style>
     body {
       background: #f6f6f7;
@@ -58,6 +59,97 @@
       color: #003366;
       border-color: #b4d6fa;
     }
+    .nav-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      z-index: 1300;
+    }
+    .hamburger {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      background: #fff;
+      border: none;
+      font-size: 2.4rem;
+      color: #005ac2;
+      cursor: pointer;
+      z-index: 1301;
+      padding: 10px 14px;
+      border-radius: 8px;
+      transition: color 0.15s, background 0.15s;
+      box-shadow: 0 1px 4px rgba(50,50,93,0.07);
+    }
+    .hamburger:focus {
+      outline: 2px solid #b4d6fa;
+      background: #f0f7ff;
+    }
+    .side-menu {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 260px;
+      height: 100vh;
+      background: #fff;
+      box-shadow: 2px 0 16px rgba(50,50,93,0.10);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 0 0 0;
+      z-index: 1400;
+      transition: left 0.22s cubic-bezier(.4,0,.2,1);
+    }
+    .side-menu.open {
+      left: 0;
+    }
+    .side-menu a {
+      color: #005ac2;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 18px 32px;
+      border-radius: 0 20px 20px 0;
+      transition: background 0.13s, color 0.13s;
+    }
+    .side-menu a:hover {
+      background: #f0f7ff;
+      color: #003366;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 2.2rem;
+      color: #b4b4b4;
+      align-self: flex-end;
+      margin: 0 16px 16px 0;
+      cursor: pointer;
+      transition: color 0.15s;
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+    .close-btn:focus {
+      outline: 2px solid #b4d6fa;
+      background: #f0f7ff;
+    }
+    .close-btn:hover {
+      color: #005ac2;
+    }
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.18);
+      z-index: 1399;
+    }
+    .overlay.open {
+      display: block;
+    }
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+      font-size: 1.1rem;
+    }
     @media (max-width: 900px) {
       .tiles {
         gap: 24px;
@@ -71,6 +163,31 @@
       }
     }
     @media (max-width: 600px) {
+      .side-menu {
+        width: 90vw;
+        min-width: 0;
+        max-width: 340px;
+        left: -100vw;
+        padding-top: 18vw;
+      }
+      .side-menu.open {
+        left: 0;
+      }
+      .hamburger {
+        top: 10px;
+        left: 10px;
+        font-size: 2.1rem;
+        padding: 12px 16px;
+      }
+      .side-menu a {
+        font-size: 1.15rem;
+        padding: 18px 18px;
+      }
+      .close-btn {
+        font-size: 2rem;
+        margin: 0 10px 10px 0;
+        padding: 8px 12px;
+      }
       .tiles {
         flex-direction: column;
         gap: 18px;
@@ -85,14 +202,81 @@
   </style>
 </head>
 <body>
-  <div class="header">UMG</div>
-  <div class="tiles">
-    <a class="tile" href="https://docs.google.com/spreadsheets/d/1uYZKS7mFGi2SrJCDoaTPzMGIvHErxRf8TNXJdQ7gK7I/edit#gid=0" target="_blank" rel="noopener noreferrer">Ticket Tracking</a>
-    <a class="tile" href="https://drive.google.com/drive/folders/1eNfWxtvG0RpWHgGbdz37Ikzxl9-0HNM0" target="_blank" rel="noopener noreferrer">Meeting Notes</a>
-    <a class="tile" href="https://app.getguru.com/card/ipj9qxLT/Merchant-Information-Universal-Music-Group-UMGFAMEHOUSE?query=umg" target="_blank" rel="noopener noreferrer">Merchant Info</a>
-    <a class="tile" href="https://shopify.zendesk.com/agent/organizations/16901561093773/tickets" target="_blank" rel="noopener noreferrer">Zendesk View</a>
-    <a class="tile" href="https://banff.lightning.force.com/lightning/r/Account/0018V00002a7WpRQAU/view" target="_blank" rel="noopener noreferrer">Salesforce</a>
-    <a class="tile" href="https://notebooklm.google.com/notebook/c69f4d60-5410-4f91-b7ea-fd468c9e67fc" target="_blank" rel="noopener noreferrer">NotebookLM</a>
+  <div class="nav-container">
+    <button class="hamburger" id="menuBtn" aria-label="Open navigation menu">&#9776;</button>
+    <nav class="side-menu" id="sideMenu">
+      <button class="close-btn" id="closeMenu" aria-label="Close navigation menu">&times;</button>
+      <a href="index.html">Home</a>
+      <a href="umg.html">UMG</a>
+      <a href="bombas.html">Bombas</a>
+      <a href="untuckit.html">UNTUCKit</a>
+      <a href="ag1.html">AG1</a>
+      <a href="scjohnson.html">SC Johnson</a>
+    </nav>
+    <div class="overlay" id="overlay"></div>
   </div>
+  <div class="header">UMG</div>
+  <div class="tiles" id="tilesContainer">
+    <div class="loading">🔓 Decrypting content...</div>
+  </div>
+  
+  <!-- Encrypted Data -->
+  <script id="encryptedData" type="application/encrypted">
+U2FsdGVkX1+BszCcUDdqgvifMYrIgoRDUnI25Z2WjpD9qbOtRMrXLvtabK3bRb6ROBXMn2A9hjUG59Vc14VPkDU6OaPFEsK8ZiGWqT54b5X1srYWj6uEBaADFqnK3ZS/1Z2axdgVnCZf201gUESdCfBfQ3Dyl7ZhLQ2y65j/B3AOxLa4Wt36F0vOQeVCKJe0CbjRCaPzTTdYMDfhPak96MEjRAQnqUrDpDcfz6J2O8Dtd11FvpGNe/XPM7Rq1DS0WsnfHlupBQCrARa5Vr4Pt+M63FmOLUXLTVUnbyX6tscBoyKyKd6ii+j9MzABa2NYWoH0OZ+3S2l+xhOBVeI7YKPYnrtrKIqHlbrxGbtDoV6zQ+MLlhaSHiImU+mfdBm6cfTL1+QbopY6+MliHc54ANsM6sI+ZuGAmQxHQIxxKuGTinCzTkOPaXw13boFoTn9sM22VNndcwU1d0XU/gaL3/aQGSmT/23NSNiYvCD5fWD9tm1wv/iibePUI3A3SP2t8SPPUKRjSeyfFcosRluzaT8j+HN7wDkHjD+/fP4D+9TswILePLSmI5fUwENa12Awudh+C7wz0CD3jlNmyFaG2POTcN222MrEMcTAbpURpCqv24cYSdvQjO4i7PX1fmSfepUuhDI+jNF6EuXpadMHjOdQ8wCoO8ctmV3Wp7cGDdNn7MA+CbRTMkJ7Cdf5AecjGB64RTtUnoB3AKFC1b+OKJZ/s0QSio5Vf9dQ2bmyK4PeXbfoTORaH7ZJiV3adMqhOWG8XtRmTNwCIQhlR3t+K4z5i1C6CYno09YJDVD+PkRhRtFZhTvZlZ0UyhCWHe5LefiCZS6PzXmnmiy0ss7fetWohC+fF/FEMmFfK8HpC3oY2IVlEedqACR0xGNPPVQVtgHRQC2Ww6pPIq0dh9ytqAMLglYg+dZDiwlTgIvGyLIf2QYw2YYJPybZBqWnDTt1M9KfggRuKnDq1RxsaRZbcYFPSA575jqSJbxfTMWAu6UyXJI7+sw1pmKU44aM/9VOyx02K9yBCwNRWLDI0lmud5hlp5s+pXESDYoezLdddNbOv2wHMhyvNyIAgqVI1z3f8iaRGXq3Osvf0ulJTgGO1Ti1h60WbhZQ4AIsvhLAdmlADCBljM7B5Dv8NxwOCzzafUHzs/4ipRu/9WQZF2A4NZxQwXof8DOAnMiwOudb0nBZfSGdzOk/tYAlZ+jvEC6tRM6FhlPk/AMk+ENeOpS+yiGbiNtlm3Q5Z19bU6u+ECRLZhk+8pxbmUCZR1CDvH/ph+glBzpRsTtAFQ3zXiyEpDBi5GSyxd+jPrw9iwS5YRmcbMQcEVhhbCQ6tCW40A0J
+  </script>
+
+  <script>
+    // Check authentication
+    if (sessionStorage.getItem('authenticated') !== 'true') {
+      window.location.href = 'index.html';
+    }
+
+    // Decrypt and display content
+    function decryptContent() {
+      try {
+        const encryptedData = document.getElementById('encryptedData').textContent.trim();
+        const masterKey = sessionStorage.getItem('masterKey');
+        
+        if (!masterKey) {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // Decrypt the data
+        const decrypted = CryptoJS.AES.decrypt(encryptedData, masterKey).toString(CryptoJS.enc.Utf8);
+        
+        if (!decrypted) {
+          throw new Error('Decryption failed');
+        }
+
+        // Insert decrypted content
+        document.getElementById('tilesContainer').innerHTML = decrypted;
+      } catch (error) {
+        document.getElementById('tilesContainer').innerHTML = '<div class="loading" style="color: #dc2626;">⚠️ Failed to decrypt content. Please <a href="index.html" style="color: #005ac2;">return to home</a> and try again.</div>';
+      }
+    }
+
+    // Run decryption when page loads
+    window.addEventListener('DOMContentLoaded', decryptContent);
+
+    // Menu functionality
+    const menuBtn = document.getElementById('menuBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    const closeMenu = document.getElementById('closeMenu');
+    const overlay = document.getElementById('overlay');
+    
+    menuBtn.onclick = function() {
+      sideMenu.classList.add('open');
+      overlay.classList.add('open');
+    };
+    closeMenu.onclick = function() {
+      sideMenu.classList.remove('open');
+      overlay.classList.remove('open');
+    };
+    overlay.onclick = function() {
+      sideMenu.classList.remove('open');
+      overlay.classList.remove('open');
+    };
+  </script>
 </body>
-</html> 
+</html>
